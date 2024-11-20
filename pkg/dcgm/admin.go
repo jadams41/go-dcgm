@@ -70,6 +70,8 @@ func initDcgm(m mode, args ...string) (err error) {
 		return fmt.Errorf("%s not Found", dcgmLib)
 	}
 
+	log.Printf("initDcgm: going to initDcgm w/ m=%v, args=%v\n", m, args)
+
 	// set the stopMode for shutdown()
 	stopMode = m
 
@@ -128,6 +130,7 @@ func stopEmbedded() (err error) {
 }
 
 func connectStandalone(args ...string) (err error) {
+	log.Printf("dcgm!!! connectStandalone started with args (#=%d): [%v]\n", len(args), args)
 	if len(args) < 2 {
 		return fmt.Errorf("Missing dcgm address and / or port")
 	}
@@ -139,6 +142,7 @@ func connectStandalone(args ...string) (err error) {
 
 	var cHandle C.dcgmHandle_t
 	addr := C.CString(args[0])
+	log.Printf("dcgm!!! connectStandalone deduced addr='%v' from args\n", addr)
 	defer freeCString(addr)
 	var connectParams C.dcgmConnectV2Params_v2
 	connectParams.version = makeVersion2(unsafe.Sizeof(connectParams))
@@ -147,8 +151,10 @@ func connectStandalone(args ...string) (err error) {
 	if err != nil {
 		return fmt.Errorf("Error parsing %s: %v\n", args[1], err)
 	}
+	log.Printf("dcgm!!! connectStandalone deduced socket='%v' from args\n", sck)
 	connectParams.addressIsUnixSocket = C.uint(sck)
 
+	log.Printf("dcgm!!! connectStandalone going to connect with params=%v, handle=%v\n", connectParams, cHandle)
 	result = C.dcgmConnect_v2(addr, &connectParams, &cHandle)
 	if err = errorString(result); err != nil {
 		return fmt.Errorf("Error connecting to nv-hostengine: %s", err)

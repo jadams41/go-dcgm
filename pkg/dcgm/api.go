@@ -3,6 +3,7 @@ package dcgm
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"sync"
 	"time"
@@ -26,6 +27,7 @@ func Init(m mode, args ...string) (cleanup func(), err error) {
 		err = fmt.Errorf("Shutdown() is called %s times, before Init()", count[1:])
 	}
 	if dcgmInitCounter == 0 {
+		log.Printf("Init: Going to initDcgm w/ m=%v, args=%v\n", m, args)
 		err = initDcgm(m, args...)
 
 		if err != nil {
