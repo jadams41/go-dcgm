@@ -157,6 +157,7 @@ func connectStandalone(args ...string) (err error) {
 	log.Printf("dcgm!!! connectStandalone going to connect with params=%v, handle=%v\n", connectParams, cHandle)
 	result = C.dcgmConnect_v2(addr, &connectParams, &cHandle)
 	if err = errorString(result); err != nil {
+		log.Printf("dcgm!!!!!!!!!! connectStandalone Failed... err=%v", err)
 		return fmt.Errorf("Error connecting to nv-hostengine: %s", err)
 	}
 
